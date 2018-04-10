@@ -86,7 +86,7 @@ foreach($targets AS $key => $val) {
 }
 
 $headers = array();
-foreach(glob(__DIR__ . '/raw/air_daily/*.csv') AS $csvFile) {
+foreach(glob(dirname(__DIR__) . '/raw/air_daily/*.csv') AS $csvFile) {
   $csvContent = file_get_contents($csvFile);
   $pos = strpos($csvContent, "\n1,");
   $headerText = substr($csvContent, 0, $pos);
