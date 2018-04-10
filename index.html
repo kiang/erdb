@@ -1,0 +1,284 @@
+<!doctype html>
+<html>
+<head>
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+	<title>縣市空氣品質季平均統計圖</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta charset="utf-8">
+	<meta property="og:title" content="縣市空氣品質季平均統計圖">
+	<meta property="og:description" content="縣市空氣品質季平均統計圖">
+	<meta property="og:type" content="website">
+	<meta property="og:image" content="https://kiang.github.io/erdb/og_image.png">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/js/bootstrap.bundle.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.0/css/bootstrap.min.css" crossorigin="anonymous" />
+	<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	.chart-container {
+		width: 100%;
+	}
+	</style>
+</head>
+<body>
+	<div id="fb-root"></div>
+	<script>
+	(function(d, s, id) {
+	var js, fjs = d.getElementsByTagName(s)[0];
+	if (d.getElementById(id)) return;
+	js = d.createElement(s); js.id = id;
+	js.src = 'https://connect.facebook.net/zh_TW/sdk.js#xfbml=1&version=v2.12&appId=1393405437614114&autoLogAppEvents=1';
+	fjs.parentNode.insertBefore(js, fjs);
+	}(document, 'script', 'facebook-jssdk'));
+	</script>
+	<div class="container-fluid">
+		<h1>縣市空氣品質季平均統計圖</h1>
+		<ul class="nav nav-tabs" id="myTab" role="tablist">
+			<li class="nav-item">
+		    <a class="nav-link active" id="pm25-tab" data-toggle="tab" href="#pm25" role="tab" aria-controls="pm25" aria-selected="true">細懸浮微粒 PM 2.5  (μg/m 3 )</a>
+		  </li>
+		  <li class="nav-item">
+		    <a class="nav-link" id="pm10-tab" data-toggle="tab" href="#pm10" role="tab" aria-controls="pm10" aria-selected="false">懸浮微粒 PM 10  (μg/m 3 )</a>
+		  </li>
+			<li class="nav-item">
+		    <a class="nav-link" id="so2-tab" data-toggle="tab" href="#so2" role="tab" aria-controls="so2" aria-selected="false">二氧化硫 SO2 (ppb)</a>
+		  </li>
+			<li class="nav-item">
+		    <a class="nav-link" id="o3-tab" data-toggle="tab" href="#o3" role="tab" aria-controls="o3" aria-selected="false">臭氧 O3 (ppb)</a>
+		  </li>
+			<li class="nav-item">
+		    <a class="nav-link" id="nox-tab" data-toggle="tab" href="#nox" role="tab" aria-controls="nox" aria-selected="false">氮氧化物 NOx (ppb)</a>
+		  </li>
+			<li class="nav-item">
+		    <a class="nav-link" id="about-tab" data-toggle="tab" href="#about" role="tab" aria-controls="about" aria-selected="false">關於</a>
+		  </li>
+		</ul>
+		<div class="tab-content" id="myTabContent">
+		  <div class="tab-pane fade show active" id="pm25" role="tabpanel" aria-labelledby="pm25-tab">
+				<div class="chart-container">
+					<canvas id="canvaspm25"></canvas>
+					<button class="showAll">全部顯示</button>
+					<button class="hideAll">全部隱藏</button>
+				</div>
+			</div>
+		  <div class="tab-pane fade" id="pm10" role="tabpanel" aria-labelledby="pm10-tab">
+				<div class="chart-container">
+					<canvas id="canvaspm10"></canvas>
+					<button class="showAll">全部顯示</button>
+					<button class="hideAll">全部隱藏</button>
+				</div>
+			</div>
+		  <div class="tab-pane fade" id="so2" role="tabpanel" aria-labelledby="so2-tab">
+				<div class="chart-container">
+					<canvas id="canvasso2"></canvas>
+					<button class="showAll">全部顯示</button>
+					<button class="hideAll">全部隱藏</button>
+				</div>
+			</div>
+			<div class="tab-pane fade" id="o3" role="tabpanel" aria-labelledby="o3-tab">
+				<div class="chart-container">
+					<canvas id="canvaso3"></canvas>
+					<button class="showAll">全部顯示</button>
+					<button class="hideAll">全部隱藏</button>
+				</div>
+			</div>
+			<div class="tab-pane fade" id="nox" role="tabpanel" aria-labelledby="nox-tab">
+				<div class="chart-container">
+					<canvas id="canvasnox"></canvas>
+					<button class="showAll">全部顯示</button>
+					<button class="hideAll">全部隱藏</button>
+				</div>
+			</div>
+			<div class="tab-pane fade" id="about" role="tabpanel" aria-labelledby="about-tab">
+				<div class="row">
+					<div class="col" style="padding: 50px;">
+						<ul>
+							<li><a href="https://erdb.epa.gov.tw/" target="_blank">環保署環境資源資料庫</a></li>
+							<li><a href="https://github.com/kiang/erdb" target="_blank">原始碼</a></li>
+							<li><a href="https://kiang.github.io/" target="_blank">更多作品</a></li>
+						</ul>
+					</div>
+					<div class="fb-page col" data-href="https://www.facebook.com/k.olc.tw/" data-tabs="timeline" data-width="500" data-small-header="false" data-adapt-container-width="true" data-hide-cover="false" data-show-facepile="true"><blockquote cite="https://www.facebook.com/k.olc.tw/" class="fb-xfbml-parse-ignore"><a href="https://www.facebook.com/k.olc.tw/">江明宗</a></blockquote></div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script>
+	var charts = {};
+	$(function() {
+		$.getJSON('pm25.json', function(c) {
+			charts['canvaspm25'] = new Chart(document.getElementById('canvaspm25').getContext('2d'), {
+				type: 'line',
+				data: c,
+				options: {
+					responsive: true,
+					title: {
+						display: true,
+						text: '細懸浮微粒 PM 2.5  (μg/m 3 )'
+					},
+					tooltips: {
+						mode: 'nearest',
+						intersect: false,
+					},
+					hover: {
+						mode: 'nearest',
+						intersect: true
+					},
+					scales: {
+						xAxes: [{
+							display: true
+						}],
+						yAxes: [{
+							display: true
+						}]
+					}
+				}
+			});
+		});
+		$.getJSON('pm10.json', function(c) {
+			charts['canvaspm10'] = new Chart(document.getElementById('canvaspm10').getContext('2d'), {
+				type: 'line',
+				data: c,
+				options: {
+					responsive: true,
+					title: {
+						display: true,
+						text: '懸浮微粒 PM 10  (μg/m 3 )'
+					},
+					tooltips: {
+						mode: 'nearest',
+						intersect: false,
+					},
+					hover: {
+						mode: 'nearest',
+						intersect: true
+					},
+					scales: {
+						xAxes: [{
+							display: true
+						}],
+						yAxes: [{
+							display: true
+						}]
+					}
+				}
+			});
+		});
+		$.getJSON('so2.json', function(c) {
+			charts['canvasso2'] = new Chart(document.getElementById('canvasso2').getContext('2d'), {
+				type: 'line',
+				data: c,
+				options: {
+					responsive: true,
+					title: {
+						display: true,
+						text: '二氧化硫 SO2 (ppb)'
+					},
+					tooltips: {
+						mode: 'nearest',
+						intersect: false,
+					},
+					hover: {
+						mode: 'nearest',
+						intersect: true
+					},
+					scales: {
+						xAxes: [{
+							display: true
+						}],
+						yAxes: [{
+							display: true
+						}]
+					}
+				}
+			});
+		});
+		$.getJSON('o3.json', function(c) {
+			charts['canvaso3'] = new Chart(document.getElementById('canvaso3').getContext('2d'), {
+				type: 'line',
+				data: c,
+				options: {
+					responsive: true,
+					title: {
+						display: true,
+						text: '臭氧 O3 (ppb)'
+					},
+					tooltips: {
+						mode: 'nearest',
+						intersect: false,
+					},
+					hover: {
+						mode: 'nearest',
+						intersect: true
+					},
+					scales: {
+						xAxes: [{
+							display: true
+						}],
+						yAxes: [{
+							display: true
+						}]
+					}
+				}
+			});
+		});
+		$.getJSON('nox.json', function(c) {
+			charts['canvasnox'] = new Chart(document.getElementById('canvasnox').getContext('2d'), {
+				type: 'line',
+				data: c,
+				options: {
+					responsive: true,
+					title: {
+						display: true,
+						text: '氮氧化物 NOx (ppb)'
+					},
+					tooltips: {
+						mode: 'nearest',
+						intersect: false,
+					},
+					hover: {
+						mode: 'nearest',
+						intersect: true
+					},
+					scales: {
+						xAxes: [{
+							display: true
+						}],
+						yAxes: [{
+							display: true
+						}]
+					}
+				}
+			});
+		});
+	})
+	$('button.showAll').click(function() {
+		var clicked = $(this).parent().find('canvas').attr('id');
+		charts[clicked].data.datasets.forEach(function(e) {
+			e.hidden = false;
+		});
+		charts[clicked].update();
+	});
+	$('button.hideAll').click(function() {
+		var clicked = $(this).parent().find('canvas').attr('id');
+		charts[clicked].data.datasets.forEach(function(e) {
+			e.hidden = true;
+		});
+		charts[clicked].update();
+	});
+	</script>
+	<script>
+		(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+		(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+		m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+		})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+		ga('create', 'UA-80817009-1', 'auto');
+		ga('send', 'pageview');
+	</script>
+</body>
+</html>
