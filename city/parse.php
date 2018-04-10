@@ -1,35 +1,21 @@
 <?php
+/*
+from https://stackoverflow.com/questions/9186038/php-generate-rgb
+*/
+function getColor($text) {
+    $hash = md5('color' . $text); // modify 'color' to get a different palette
+    return array(
+        hexdec(substr($hash, 0, 2)), // r
+        hexdec(substr($hash, 2, 2)), // g
+        hexdec(substr($hash, 4, 2))); //b
+}
+
 $targets = array(
   'pm25' => '細懸浮微粒 PM 2.5  (μg/m 3 )',
   'pm10' => '懸浮微粒 PM 10  (μg/m 3 )',
   'so2' => '二氧化硫 SO2 (ppb)',
   'o3' => '臭氧 O3 (ppb)',
   'nox' => '氮氧化物 NOx (ppb)',
-);
-
-$cityColor = array(
-  '臺北市' => 'rgb(255, 99, 132)',
-  '新北市' => 'rgb(255, 159, 64)',
-  '臺中市' => 'rgb(255, 205, 86)',
-  '臺南市' => 'rgb(218,165,32)',
-  '高雄市' => 'rgb(54, 162, 235)',
-  '基隆市' => 'rgb(153, 102, 255)',
-  '新竹市' => 'rgb(34,139,34)',
-  '嘉義市' => 'rgb(107,142,35)',
-  '宜蘭縣' => 'rgb(0,255,0)',
-  '桃園市' => 'rgb(255,255,0)',
-  '新竹縣' => 'rgb(0,255,255)',
-  '苗栗縣' => 'rgb(255,0,255)',
-  '彰化縣' => 'rgb(192,192,192)',
-  '南投縣' => 'rgb(128,0,0)',
-  '雲林縣' => 'rgb(128,128,0)',
-  '嘉義縣' => 'rgb(0,128,128)',
-  '屏東縣' => 'rgb(255,69,0)',
-  '臺東縣' => 'rgb(32,178,170)',
-  '花蓮縣' => 'rgb(72,61,139)',
-  '澎湖縣' => 'rgb(25,25,112)',
-  '金門縣' => 'rgb(112,128,144)',
-  '連江縣' => 'rgb(255,20,147)',
 );
 
 $result = $labels = array();
@@ -127,10 +113,11 @@ foreach($result AS $targetKey => $targetValue) {
   foreach($targetValue AS $k => $dataset) {
     foreach($dataset['count'] AS $city => $val) {
       if(!isset($datasets[$targetKey][$city])) {
+        $color = 'rgb(' . implode(',', getColor($city)) . ')';
         $datasets[$targetKey][$city] = array(
           'label' => $city,
-          'backgroundColor' => $cityColor[$city],
-          'borderColor' => $cityColor[$city],
+          'backgroundColor' => $color,
+          'borderColor' => $color,
           'fill' => false,
           'hidden' => true,
           'data' => array(),
